@@ -1,11 +1,18 @@
 import { Logo } from "@/components/Logo"
 import { Button } from "@/components/ui/button"
+import { useAuthStore } from "@/store/auth"
 import { useNavigate } from "react-router-dom"
 
 export function Promoter() {
   const navigate = useNavigate()
+  const { logout } = useAuthStore()
   return (
     <div className="flex h-screen w-full flex-col justify-around">
+      <div className="ml-auto flex p-4">
+        <Button className="w-20" onClick={logout}>
+          Sair
+        </Button>
+      </div>
       <div className="flex justify-center">
         <Logo />
       </div>
