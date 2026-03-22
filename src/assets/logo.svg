@@ -1,0 +1,55 @@
+PhotosBucket:
+  Type: AWS::S3::Bucket
+  DeletionPolicy: Retain
+  Properties:
+    BucketName: ${self:service}-${self:provider.stage}-photos-bucket-${aws:accountId}
+    CorsConfiguration:
+      CorsRules:
+        - AllowedOrigins:
+            - "*"
+          AllowedMethods:
+            - GET
+            - POST
+            - PUT
+          AllowedHeaders:
+            - "*"
+          MaxAge: 3000
+
+
+useInfiniteQuery({
+  queryKey: ["photos"],
+  queryFn: ({ pageParam }) =>
+    listPhotos({ cursor: pageParam }),
+
+  getNextPageParam: (lastPage) => lastPage.nextCursor,
+})
+
+
+
+
+
+
+export function PhotosPage() {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useListPhotos()
+
+  const photos = data?.pages.flatMap(page => page.photos) ?? []
+
+  return (
+    <div>
+      {photos.map(photo => (
+        <img key={photo.id} src={photo.urlImage} width={200} />
+      ))}
+
+      {hasNextPage && (
+        <button onClick={() => fetchNextPage()}>
+          {isFetchingNextPage ? "Carregando..." : "Carregar mais"}
+        </button>
+      )}
+    </div>
+  )
+}
